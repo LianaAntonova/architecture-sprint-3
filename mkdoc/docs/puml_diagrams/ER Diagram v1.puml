@@ -1,0 +1,33 @@
+@startuml er_diargamm
+entity user {
+  + id
+  + name
+}
+entity house {
+  + id
+  + user_id
+  + address
+}
+entity device {
+  + serial_number
+  + status
+}
+entity sensor {
+  + serial_number
+  + device_id
+}
+entity telemetry_data {
+  + sensor_id
+  + datetime
+  + value
+}
+
+
+user --|{ house
+house --|{ device
+device -- sensor
+sensor --|{ telemetry_data
+
+
+
+@enduml
