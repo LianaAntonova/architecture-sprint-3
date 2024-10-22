@@ -1,0 +1,50 @@
+name: PlantUML Diagrams
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate PlantUML Diagrams
+        uses: rotaract/plantuml-action@v1
+        with:
+          format: svg
+          pattern: 'mkdoc/docs/puml_diagrams/*.puml'
+
+      - name: List generated files
+        run: ls -R mkdoc/docs/puml_diagrams/
+
+      - name: Удаляем старые диаграммы
+        run: rm -f mkdoc/docs/generated_diagrams/*.svg
+
+      - name: Удаляем старые диаграммы 2
+        run: rm -f mkdoc/docs/generated_diagrams/*.png
+
+      - name: Move SVG files to the target directory
+        run: |
+          mv mkdoc/docs/puml_diagrams/*.svg mkdoc/docs/generated_diagrams/
+
+      # - name: Upload Diagrams
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: diagrams-${{ github.event.head_commit.message }}
+      #     path: 'mkdoc/docs/puml_diagrams/**/*.svg'
+
+      - name: List generated files
+        run: ls -R mkdoc/docs/generated_diagrams/
+
+      - name: Commit Diagrams
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          # git add mkdoc/docs/generated_diagrams/*.svg
+          git add .
+          git commit -m "Automated diagram generation"
+          git push origin main
+        if: success()
